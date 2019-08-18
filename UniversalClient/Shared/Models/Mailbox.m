@@ -242,6 +242,9 @@
         case LEMailboxFilterTypeExcavator:
             return _array(@"Excavator");
             break;
+		case LEMailboxFilterTypeFissure:
+			return _array(@"Fissure");
+			break;
         case LEMailboxFilterTypeIntelligence:
             return _array(@"Intelligence");
             break;
@@ -277,7 +280,6 @@
 
 - (id)messagesLoaded:(LEInboxView *)request {
 	if (![request wasError]) {
-        NSLog(@"Messages Loaded: %@", request.response);
 		self->originalMessageHeaderCount = [request.messages count];
 		self->numPages = [Util numPagesForCount:_intv(request.messageCount)];
 		self.messageHeaders = request.messages;

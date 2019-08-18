@@ -191,7 +191,7 @@
 		cell.autoresizesSubviews = YES;
 		
 		cell.label = [[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 95, 20)] autorelease];
-		cell.label.textAlignment = UITextAlignmentRight;
+		cell.label.textAlignment = NSTextAlignmentRight;
 		cell.label.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
 		cell.label.font = LABEL_FONT;
 		cell.label.textColor = LABEL_COLOR;
@@ -199,7 +199,7 @@
 		[cell.contentView addSubview:cell.label];
 		
 		cell.textView = [[[UITextView alloc] initWithFrame:CGRectMake(5, 20, 310, 140)] autorelease];
-		cell.textView.textAlignment = UITextAlignmentLeft;
+		cell.textView.textAlignment = NSTextAlignmentLeft;
 		cell.textView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
 		cell.textView.autocorrectionType = UITextAutocorrectionTypeYes;
 		cell.textView.font = TEXT_ENTRY_FONT;
@@ -212,7 +212,7 @@
 		
 		UIToolbar *toolbar = [[[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 44.0f)] autorelease];
 		toolbar.center = CGPointMake(160.0f, 200.0f);
-		UIBarButtonItem *clearItem = [[[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStyleBordered target:cell action:@selector(clearText)] autorelease];
+		UIBarButtonItem *clearItem = [[[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:cell action:@selector(clearText)] autorelease];
 		UIBarButtonItem *spacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease];
 		UIBarButtonItem *dismissItem = [[[UIBarButtonItem alloc] initWithTitle:@"Dismiss" style:UIBarButtonItemStyleDone target:cell action:@selector(dismissKeyboard)] autorelease];
 		toolbar.items = _array(clearItem, spacer, dismissItem);

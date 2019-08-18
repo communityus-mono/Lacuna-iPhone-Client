@@ -74,7 +74,7 @@
 #pragma mark UIAlertViewDelegate Methods
 
 
-- (void) alertView:(UIAlertView *) alertView clickedButtonAtIndex:(int)index {
+- (void) alertView:(UIAlertView *) alertView clickedButtonAtIndex:(long)index {
 	if (index != [alertView cancelButtonIndex]) {
 		self.numericValue = [NSDecimalNumber one];
 		[self.numberButton setTitle:[self.numericValue stringValue] forState:UIControlStateNormal];
@@ -102,7 +102,7 @@
 
 - (IBAction)editNumericValue {
 	PickNumericValueController *pickNumericValueController = [PickNumericValueController createWithDelegate:self maxValue:[NSDecimalNumber decimalNumberWithString:@"7"] hidesZero:YES showTenths:NO];
-	[self.viewController presentModalViewController:pickNumericValueController animated:YES];
+	[self.viewController presentViewController:pickNumericValueController animated:YES completion:nil];
 	[pickNumericValueController setValue:self.numericValue];
 	pickNumericValueController.titleLabel.text = self.nameLabel.text;
 }
@@ -131,7 +131,7 @@
 		
 		cell.nameLabel = [[[UILabel alloc] initWithFrame:CGRectMake(20, 11, 175, 21)] autorelease];
 		cell.nameLabel.backgroundColor = [UIColor clearColor];
-		cell.nameLabel.textAlignment = UITextAlignmentRight;
+		cell.nameLabel.textAlignment = NSTextAlignmentRight;
 		cell.nameLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
 		cell.nameLabel.font = TEXT_FONT;
 		cell.nameLabel.textColor = TEXT_COLOR;

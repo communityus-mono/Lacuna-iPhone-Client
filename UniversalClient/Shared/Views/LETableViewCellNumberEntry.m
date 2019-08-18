@@ -53,8 +53,10 @@
 
 - (void)newNumericValue:(NSDecimalNumber *)value {
 	if ([self.maxValue compare:value] == NSOrderedAscending) {
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Amount Invalid" message:[NSString stringWithFormat:@"You entered %@ which is above the maximum amount of %@.", value, self.maxValue] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Amount Invalid" message:[NSString stringWithFormat:@"You entered %@ which is above the maximum amount of %@.", value, self.maxValue] preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
 		value = self.maxValue;
 	}
 	[self setNumericValue:value];
@@ -68,7 +70,7 @@
 - (IBAction)editNumericValue {
     NSLog(@"maxValue: %@", self.maxValue);
 	PickNumericValueController *pickNumericValueController = [PickNumericValueController createWithDelegate:self maxValue:self.maxValue hidesZero:NO showTenths:NO];
-	[self.viewController presentModalViewController:pickNumericValueController animated:YES];
+	[self.viewController presentViewController:pickNumericValueController animated:YES completion:nil];
 	[pickNumericValueController setValue:self.numericValue];
 	pickNumericValueController.titleLabel.text = self.label.text;
 }
@@ -97,7 +99,7 @@
 		
 		cell.label = [[[UILabel alloc] initWithFrame:CGRectMake(5, 0, 95, 44)] autorelease];
 		cell.label.backgroundColor = [UIColor clearColor];
-		cell.label.textAlignment = UITextAlignmentRight;
+		cell.label.textAlignment = NSTextAlignmentRight;
 		cell.label.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
 		[cell.contentView addSubview:cell.label];
 		cell.numberButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
