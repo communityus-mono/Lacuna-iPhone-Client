@@ -218,7 +218,7 @@ typedef enum {
 			self->pickColonyController = [[PickColonyController create] retain];
 			self->pickColonyController.delegate = self;
 			self->pickColonyController.colonies = session.empire.planets;
-			[self presentModalViewController:self->pickColonyController animated:YES];
+			[self presentViewController:self->pickColonyController animated:YES completion:nil];
 			break;
 	}
 }
@@ -255,7 +255,7 @@ typedef enum {
 
 - (void)colonySelected:(NSString *)colonyId {
 	self.sendFromBodyId = colonyId;
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:nil];
 	[self->pickColonyController release];
 	self->pickColonyController = nil;
 	self.unsendableShips = nil;

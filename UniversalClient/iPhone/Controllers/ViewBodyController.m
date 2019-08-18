@@ -85,7 +85,7 @@ typedef enum {
 	self.navigationItem.title = @"Loading";
 	self.navigationItem.backBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil] autorelease];
 	if ([self.navigationController.viewControllers objectAtIndex:0] == self) {
-		self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleBordered target:self action:@selector(logout)] autorelease];
+		self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(logout)] autorelease];
 	}
 	
 	self.sectionHeaders = _array([LEViewSectionTab tableView:self.tableView withText:@"Body"],
@@ -399,14 +399,20 @@ typedef enum {
                     [[self navigationController] pushViewController:renameBodyController animated:YES];
                     break;
                 case ACTION_ROW_ABANDON_BODY:
-                    ; //DO NOT REMOVE
-                    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Do you really wish to abandon this colony?" delegate:self cancelButtonTitle:@"No" destructiveButtonTitle:@"Yes" otherButtonTitles:nil];
-                    actionSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-                    [actionSheet showFromTabBar:self.tabBarController.tabBar];
-                    [actionSheet release];
+                    ; //DO NOT REMOVE					
+					UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Do you really wish to abandon this colony?" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+					UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+						[[[LEBodyAbandon alloc] initWithCallback:@selector(bodyAbandoned:) target:self forBody:self.bodyId] autorelease];
+					}];
+					UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+					}];
+					[alert addAction:cancelAction];
+					[alert addAction:okAction];
+					[self presentViewController:alert animated:YES completion:nil];
+					[self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
                     break;
                 default:
-                    NSLog(@"Invalid action clicked: %i:%i", indexPath.section, indexPath.row);
+                    NSLog(@"Invalid action clicked: %li:%li", (long)indexPath.section, (long)indexPath.row);
                     break;
             }
             break;
@@ -460,7 +466,7 @@ typedef enum {
 - (void)colonySelected:(NSString *)colonyId {
 	self.bodyId = colonyId;
 	[self loadBody];
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:nil];
 	[self->pickColonyController release];
 }
 
@@ -480,7 +486,7 @@ typedef enum {
 		self->pickColonyController = [[PickColonyController create] retain];
 		self->pickColonyController.delegate = self;
 		self->pickColonyController.colonies = session.empire.planets;
-		[self presentModalViewController:self->pickColonyController animated:YES];
+		[self presentViewController:self->pickColonyController animated:YES completion:nil];
 	} else {
 		if ([[[session.empire.planets objectAtIndex:0] objectForKey:@"id"] isEqualToString:self.bodyId]) {
 			self.bodyId = [[session.empire.planets objectAtIndex:1] objectForKey:@"id"];
@@ -489,17 +495,6 @@ typedef enum {
 		}
 		[self loadBody];
 	}
-}
-
-
-#pragma mark -
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.destructiveButtonIndex == buttonIndex ) {
-		[[[LEBodyAbandon alloc] initWithCallback:@selector(bodyAbandoned:) target:self forBody:self.bodyId] autorelease];
-	}
-	[self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
 }
 
 

@@ -93,7 +93,7 @@ typedef enum {
 
 	self.navigationItem.backBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil] autorelease];
 	if ([self.navigationController.viewControllers objectAtIndex:0] == self) {
-		self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleBordered target:self action:@selector(logout)] autorelease];
+		self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(logout)] autorelease];
 	}
 	self.navigationItem.title = @"Loading";
 	
@@ -663,8 +663,12 @@ typedef enum {
 - (BOOL)newTextValue:(NSString *)value forTextName:(NSString *)textName {
 	if ([textName isEqualToString:@"Email Addresses"]) {
 		if ([value rangeOfString:@"@"].location == NSNotFound) {
-			UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Error" message:@"That does not appear to be a valid email address" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-			[av show];
+			UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Error" message: @"That does not appear to be a valid email address." preferredStyle:UIAlertControllerStyleAlert];
+			UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+								 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+			[av addAction: ok];
+			[self presentViewController:av animated:YES completion:nil];
+			
 			return NO;
 		} else {
 			Session *session = [Session sharedInstance];

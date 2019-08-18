@@ -44,8 +44,8 @@
 	self.tipLabel.text = @"Tips";
 	UIBarButtonItem *tipsBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:self.tipLabel] autorelease];
 	UIBarButtonItem *flexable = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease];
-	UIBarButtonItem	*prevButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"<<" style:UIBarButtonItemStyleBordered target:self action:@selector(previousTip)] autorelease];
-	UIBarButtonItem	*nextButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@">>" style:UIBarButtonItemStyleBordered target:self action:@selector(nextTip)] autorelease];
+	UIBarButtonItem	*prevButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"<<" style:UIBarButtonItemStylePlain target:self action:@selector(previousTip)] autorelease];
+	UIBarButtonItem	*nextButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@">>" style:UIBarButtonItemStylePlain target:self action:@selector(nextTip)] autorelease];
 	[self.toolbar setItems:_array(prevButtonItem, flexable, tipsBarButtonItem, flexable, nextButtonItem)];
 }
 
@@ -60,7 +60,7 @@
 	[session readItemDescriptions];
 	self.tips = [session.itemDescriptions objectForKey:@"tips"];
 	
-	self.tipLabel.text = [NSString stringWithFormat:@"Tip %i/%i", self->currentTipIdx+1, [self.tips count]];
+	self.tipLabel.text = [NSString stringWithFormat:@"Tip %i/%lu", self->currentTipIdx+1, (unsigned long)[self.tips count]];
 	self.tipTextView.text = [self.tips objectAtIndex:self->currentTipIdx];
 }
 
@@ -103,7 +103,7 @@
 	if (self->currentTipIdx < 0) {
 		self->currentTipIdx = [self.tips count]-1;
 	}
-	self.tipLabel.text = [NSString stringWithFormat:@"Tip %i/%i", self->currentTipIdx+1, [self.tips count]];
+	self.tipLabel.text = [NSString stringWithFormat:@"Tip %i/%lu", self->currentTipIdx+1, (unsigned long)[self.tips count]];
 	self.tipTextView.text = [self.tips objectAtIndex:self->currentTipIdx];
 }
 
@@ -113,7 +113,7 @@
 	if (self->currentTipIdx >= [self.tips count]) {
 		self->currentTipIdx = 0;
 	}
-	self.tipLabel.text = [NSString stringWithFormat:@"Tip %i/%i", self->currentTipIdx+1, [self.tips count]];
+	self.tipLabel.text = [NSString stringWithFormat:@"Tip %i/%lu", self->currentTipIdx+1, (unsigned long)[self.tips count]];
 	self.tipTextView.text = [self.tips objectAtIndex:self->currentTipIdx];
 }
 

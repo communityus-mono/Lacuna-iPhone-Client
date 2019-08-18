@@ -214,7 +214,7 @@ typedef enum {
 - (void)showWebPage:(NSString*)url {
 	WebPageController *webPageController = [WebPageController create];
 	[webPageController goToUrl:url];
-	[self presentModalViewController:webPageController animated:YES];
+	[self presentViewController:webPageController animated:YES completion:nil];
 }
 
 
@@ -249,15 +249,20 @@ typedef enum {
 
 
 - (void)voteYesForBody:(NSString *)bodyId building:(NSString *)buildingId proposition:(NSString *)propositionId {
-    UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Cannot Vote" message:@"You cannot vote from this interface. If you would like to vote got the Parliament building for this Space Station to vote." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-    [av show];
-    
+	UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Cannot Vote" message: @"You cannot vote from this interface. If you would like to vote got the Parliament building for this Space Station to vote." preferredStyle:UIAlertControllerStyleAlert];
+	UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+						 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+	[av addAction: ok];
+	[self presentViewController:av animated:YES completion:nil];
 }
 
 
 - (void)voteNoForBody:(NSString *)bodyId building:(NSString *)buildingId proposition:(NSString *)propositionId {
-    UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Cannot Vote" message:@"You cannot vote from this interface. If you would like to vote got the Parliament building for this Space Station to vote." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-    [av show];
+	UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Cannot Vote" message: @"You cannot vote from this interface. If you would like to vote got the Parliament building for this Space Station to vote." preferredStyle:UIAlertControllerStyleAlert];
+	UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+						 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+	[av addAction: ok];
+	[self presentViewController:av animated:YES completion:nil];
 }
 
 
@@ -265,7 +270,6 @@ typedef enum {
 #pragma mark Callback Methods
 
 - (void)lawsLoaded:(LEBuildingViewLaws *)request {
-    NSLog(@"Laws Loaded: %@", request.response);
     NSMutableArray *tmp = [NSMutableArray arrayWithCapacity:[self.laws count]];
     [request.laws enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Law *law = [[Law alloc] init];

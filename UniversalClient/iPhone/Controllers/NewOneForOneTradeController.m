@@ -169,11 +169,16 @@ typedef enum {
 
 - (IBAction)send {
 	if (self.oneForOneTrade.haveResourceType && self.oneForOneTrade.wantResourceType && (_intv(self.oneForOneTrade.quantity) > 0)) {
-		if (self.baseTradeBuilding.usesEssentia) {
-			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"This will cost 3 essentia. Do you wish to contine?" delegate:self cancelButtonTitle:@"No" destructiveButtonTitle:@"Yes" otherButtonTitles:nil];
-			actionSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-			[actionSheet showFromTabBar:self.tabBarController.tabBar];
-			[actionSheet release];
+		if (self.baseTradeBuilding.usesEssentia) {			
+			UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"This will cost 3 essentia. Do you wish to contine?" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+			UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+				[self tradeOneForOne];
+			}];
+			UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+			}];
+			[alert addAction:cancelAction];
+			[alert addAction:okAction];
+			[self presentViewController:alert animated:YES completion:nil];
 		} else {
 			[self oneForOneTrade];
 		}
@@ -190,8 +195,11 @@ typedef enum {
 		} else {
 			errorText = @"This trade is not valid.";
 		}
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Trade invalid" message:errorText delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Trade invalid" message:errorText preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
 	}
 }
 
@@ -242,23 +250,17 @@ typedef enum {
 - (id)tradedOneForOne:(LEBuildingTradeOneForOne *)request {
 	if ([request wasError]) {
 		NSString *errorText = [request errorMessage];
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Count not do 1 for 1 trade." message:errorText delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Count not do 1 for 1 trade." message:errorText preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
 		[request markErrorHandled];
 	} else {
 		[self.navigationController popViewControllerAnimated:YES];
 	}
 	
 	return nil;
-}
-
-#pragma mark -
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.destructiveButtonIndex == buttonIndex) {
-		[self tradeOneForOne];
-	}
 }
 
 

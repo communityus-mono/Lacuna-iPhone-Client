@@ -57,7 +57,6 @@ typedef enum {
 	self.messageSegmentedControl = [[[UISegmentedControl alloc] initWithItems:_array(UP_ARROW_ICON, DOWN_ARROW_ICON)] autorelease];
 	[self.messageSegmentedControl addTarget:self action:@selector(switchMessage) forControlEvents:UIControlEventValueChanged]; 
 	self.messageSegmentedControl.momentary = YES;
-	self.messageSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar; 
 	UIBarButtonItem *rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:self.messageSegmentedControl] autorelease];
 	self.navigationItem.rightBarButtonItem = rightBarButtonItem; 
 	
@@ -288,7 +287,7 @@ typedef enum {
 				if (link) {
 					WebPageController *webPageController = [WebPageController create];
 					[webPageController goToUrl:link];
-					[self presentModalViewController:webPageController animated:YES];
+					[self presentViewController:webPageController animated:YES completion:nil];
 				}
 			} else if ([key isEqualToString:@"link"]) {
 				NSDictionary *attachment = [self->attachements objectForKey:key];
@@ -296,7 +295,7 @@ typedef enum {
 				if (link) {
 					WebPageController *webPageController = [WebPageController create];
 					[webPageController goToUrl:link];
-					[self presentModalViewController:webPageController animated:YES];
+					[self presentViewController:webPageController animated:YES completion:nil];
 				}
 			} else if ([key isEqualToString:@"table"]) {
 				NSArray *attachment = [self->attachements objectForKey:key];
@@ -478,7 +477,7 @@ typedef enum {
 - (void)showWebPage:(NSString*)url {
 	WebPageController *webPageController = [WebPageController create];
 	[webPageController goToUrl:url];
-	[self presentModalViewController:webPageController animated:YES];
+	[self presentViewController:webPageController animated:YES completion:nil];
 }
 
 
@@ -558,8 +557,12 @@ typedef enum {
 - (void)voteCast:(LEBuildingCastVote *)request {
     if (![request wasError]) {
         NSString *msg = [NSString stringWithFormat:@"The vote needs %@ votes to pass. Current Votes Yes: %@, No: %@", [request.proposition objectForKey:@"votes_needed"], [request.proposition objectForKey:@"votes_yes"], [request.proposition objectForKey:@"votes_no"]];
-        UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Vote Cast!" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-        [av show];
+		
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Vote Cast!" message:msg preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
     }
 }
 

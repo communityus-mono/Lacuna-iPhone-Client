@@ -321,10 +321,16 @@ typedef enum {
 		case SECTION_EXPERIMENTS:
 			if ([[self.graft objectForKey:@"graftable_affinities"] count] > 0) {
 				self.selectedAffinity = [[self.graft objectForKey:@"graftable_affinities"] objectAtIndex:indexPath.row];
-				UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:@"Experiment on Prisoner? This will cost %@ essentia, may kill the prisoner, and may increase your %@.", self.prepareExperiment.essentiaCost, [Util prettyCodeValue:self.selectedAffinity]] delegate:self cancelButtonTitle:@"No" destructiveButtonTitle:@"Yes" otherButtonTitles:nil];
-				actionSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-				[actionSheet showFromTabBar:self.tabBarController.tabBar];
-				[actionSheet release];
+				
+				UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Experiment on Prisoner? This will cost %@ essentia, may kill the prisoner, and may increase your %@.", self.prepareExperiment.essentiaCost, [Util prettyCodeValue:self.selectedAffinity]] message:@"" preferredStyle:UIAlertControllerStyleAlert];
+				UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+					[self.geneticsLab runExperimentWithSpy:[[self.graft objectForKey:@"spy"] objectForKey:@"id"] affinity:self.selectedAffinity target:self callback:@selector(experimentComplete:)];
+				}];
+				UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+				}];
+				[alert addAction:cancelAction];
+				[alert addAction:okAction];
+				[self presentViewController:alert animated:YES completion:nil];
 			}
 			break;
 	}
@@ -362,8 +368,11 @@ typedef enum {
 - (void)experimentComplete:(LEBuildingRunExperiment *)request {
 	if (![request wasError]) {
 		[self.prepareExperiment parseData:request.result];
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Experiment Complete" message:request.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Experiment Complete" message:request.message preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
 		if (request.spySurvived) {
 			//[self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
 			[self.prepareExperiment.grafts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
@@ -378,16 +387,6 @@ typedef enum {
 			[self.navigationController popViewControllerAnimated:YES];
 		}
 
-	}
-}
-
-
-#pragma mark -
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.destructiveButtonIndex == buttonIndex ) {
-		[self.geneticsLab runExperimentWithSpy:[[self.graft objectForKey:@"spy"] objectForKey:@"id"] affinity:self.selectedAffinity target:self callback:@selector(experimentComplete:)];
 	}
 }
 

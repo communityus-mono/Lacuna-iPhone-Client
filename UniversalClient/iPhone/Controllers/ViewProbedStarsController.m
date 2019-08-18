@@ -51,7 +51,6 @@ typedef enum {
 	self.pageSegmentedControl = [[[UISegmentedControl alloc] initWithItems:_array(UP_ARROW_ICON, DOWN_ARROW_ICON)] autorelease];
 	[self.pageSegmentedControl addTarget:self action:@selector(switchPage) forControlEvents:UIControlEventValueChanged]; 
 	self.pageSegmentedControl.momentary = YES;
-	self.pageSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar; 
 	UIBarButtonItem *rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:self.pageSegmentedControl] autorelease];
 	self.navigationItem.rightBarButtonItem = rightBarButtonItem; 
 	
@@ -190,10 +189,17 @@ typedef enum {
 					break;
 				case ROW_ABANDON_PROBE:
 					self.selectedStar = star;
-					UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:@"Abandon Star %@?", star.name] delegate:self cancelButtonTitle:@"No" destructiveButtonTitle:@"Yes" otherButtonTitles:nil];
-					actionSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-					[actionSheet showFromTabBar:self.tabBarController.tabBar];
-					[actionSheet release];
+					UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Abandon Star %@?", star.name] message:@"" preferredStyle:UIAlertControllerStyleAlert];
+					UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+						[self.observatory abandonProbeAtStar:self.selectedStar.id];
+						self.selectedStar = nil;
+						[self.navigationController popViewControllerAnimated:YES];
+					}];
+					UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+					}];
+					[alert addAction:cancelAction];
+					[alert addAction:okAction];
+					[self presentViewController:alert animated:YES completion:nil];
 					break;
 			}
 		}
@@ -222,18 +228,6 @@ typedef enum {
 	self.observatory = nil;
 	self.selectedStar = nil;
     [super dealloc];
-}
-
-
-#pragma mark -
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.destructiveButtonIndex == buttonIndex ) {
-		[self.observatory abandonProbeAtStar:self.selectedStar.id];
-		self.selectedStar = nil;
-		[self.navigationController popViewControllerAnimated:YES];
-	}
 }
 
 

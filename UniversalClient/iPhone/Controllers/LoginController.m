@@ -60,7 +60,7 @@ typedef enum {
 
 	self.view.autoresizesSubviews = YES;
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.navigationItem.backBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease];
+    self.navigationItem.backBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil] autorelease];
 	self.navigationItem.title = @"Empire";
 
 	self.empireNameCell = [LETableViewCellTextEntry getCellForTableView:self.tableView];
@@ -265,14 +265,27 @@ typedef enum {
 					break;
 				case LOGIN_FORM_ROW_LOGIN_BUTTON:
 					if ([self.empireNameCell.textField.text length] == 0) {
-						UIAlertView *noEmpireNameAlertView = [[[UIAlertView alloc] initWithTitle:@"Error" message:@"You must enter an empire name." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-						[noEmpireNameAlertView show];
+
+						UIAlertController *noEmpireNameAlertView = [UIAlertController alertControllerWithTitle:@"Error" message: @"You must enter an empire name." preferredStyle:UIAlertControllerStyleAlert];
+						UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+											 { [noEmpireNameAlertView dismissViewControllerAnimated:YES completion:nil]; }];
+						[noEmpireNameAlertView addAction: ok];
+						[self presentViewController:noEmpireNameAlertView animated:YES completion:nil];
+						
 					} else if ([self.passwordCell.textField.text length] == 0) {
-						UIAlertView *noEmpireNameAlertView = [[[UIAlertView alloc] initWithTitle:@"Error" message:@"You must enter a password." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-						[noEmpireNameAlertView show];
+						UIAlertController *noEmpirePassAlertView = [UIAlertController alertControllerWithTitle:@"Error" message: @"You must enter a password." preferredStyle:UIAlertControllerStyleAlert];
+						UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+											 { [noEmpirePassAlertView dismissViewControllerAnimated:YES completion:nil]; }];
+						[noEmpirePassAlertView addAction: ok];
+						[self presentViewController:noEmpirePassAlertView animated:YES completion:nil];
+						
 					} else if (!self.selectedServer) {
-						UIAlertView *noEmpireNameAlertView = [[[UIAlertView alloc] initWithTitle:@"Error" message:@"You must select a server." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-						[noEmpireNameAlertView show];
+						UIAlertController *noEmpireServerAlertView = [UIAlertController alertControllerWithTitle:@"Error" message: @"You must select a server." preferredStyle:UIAlertControllerStyleAlert];
+						UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+											 { [noEmpireServerAlertView dismissViewControllerAnimated:YES completion:nil]; }];
+						[noEmpireServerAlertView addAction: ok];
+						[self presentViewController:noEmpireServerAlertView animated:YES completion:nil];
+						
 					} else {
 						[self doLogin];
 					}
@@ -296,7 +309,7 @@ typedef enum {
 			session.serverUri = [keychainItemWrapper objectForKey:(id)kSecAttrService];
 			if (!session.serverUri || [session.serverUri length] == 0) {
 				//KEVIN REMOVE AFTER BETA
-				session.serverUri = @"http://pt.lacunaexpanse.com/";
+				session.serverUri = @"https://pt.lacunaexpanse.com/";
 			}
 			[session loginWithUsername:username password:password];
 			[self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];

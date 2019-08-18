@@ -17,8 +17,7 @@
 
 typedef enum {
 	ROW_EMPIRE,
-    //Below RedOrion Added - Empire IDs
-    ROW_EMPIRE_ID, 
+    ROW_EMPIRE_ID,
     ROW_ALLIANCE, 
 	ROW_NUM_COLONIES,
 	ROW_POPULATION,
@@ -71,7 +70,6 @@ typedef enum {
 	self.pageSegmentedControl = [[[UISegmentedControl alloc] initWithItems:_array(UP_ARROW_ICON, DOWN_ARROW_ICON)] autorelease];
 	[self.pageSegmentedControl addTarget:self action:@selector(switchPage) forControlEvents:UIControlEventValueChanged]; 
 	self.pageSegmentedControl.momentary = YES;
-	self.pageSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar; 
 	UIBarButtonItem *rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:self.pageSegmentedControl] autorelease];
 	self.navigationItem.rightBarButtonItem = rightBarButtonItem; 
 	
@@ -81,7 +79,7 @@ typedef enum {
 	
 	self.toolbarItems = _array(
 		[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease],
-		[[[UIBarButtonItem alloc] initWithTitle:@"Search for Empire" style:UIBarButtonItemStyleBordered target:self action:@selector(searchForEmpire)] autorelease],
+		[[[UIBarButtonItem alloc] initWithTitle:@"Search for Empire" style:UIBarButtonItemStylePlain target:self action:@selector(searchForEmpire)] autorelease],
 		[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]
 	);
 	
@@ -207,7 +205,6 @@ typedef enum {
 					empireCell.content.text = [empire objectForKey:@"empire_name"];
 					cell = empireCell;
 					break;
-                //Below RedOrion Added - Empire IDs
                 case ROW_EMPIRE_ID:
 					; //DO NOT REMOVE
 					LETableViewCellLabeledText *empireidCell = [LETableViewCellLabeledText getCellForTableView:tableView isSelectable:NO];
@@ -215,7 +212,6 @@ typedef enum {
 					empireidCell.content.text =  [Util asString:[empire objectForKey:@"empire_id"]];
 					cell = empireidCell;
 					break;
-                //Below RedOrion Added - Alliance
                 case ROW_ALLIANCE:
 					; //DO NOT REMOVE
 					LETableViewCellLabeledText *allianceCell = [LETableViewCellLabeledText getCellForTableView:tableView isSelectable:NO];

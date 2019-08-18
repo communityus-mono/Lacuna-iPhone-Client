@@ -540,14 +540,22 @@ typedef enum {
 
 - (IBAction)send {
 	if ([self.itemPush.items count] == 0) {
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Incomplete" message:@"You have not selected anything to push." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Incomplete" message: @"You have not selected anything to push." preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
 	} else {
-			if (self.baseTradeBuilding.usesEssentia) {
-			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"This will cost 2 essentia. Do you wish to contine?" delegate:self cancelButtonTitle:@"No" destructiveButtonTitle:@"Yes" otherButtonTitles:nil];
-			actionSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-			[actionSheet showFromTabBar:self.tabBarController.tabBar];
-			[actionSheet release];
+			if (self.baseTradeBuilding.usesEssentia) {				
+				UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"This will cost 2 essentia. Do you wish to contine?" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+				UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+					[self pushItems];
+				}];
+				UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+				}];
+				[alert addAction:cancelAction];
+				[alert addAction:okAction];
+				[self presentViewController:alert animated:YES completion:nil];
 		} else {
 			[self pushItems];
 		}
@@ -560,7 +568,7 @@ typedef enum {
 
 - (void)colonySelected:(NSString *)colonyId {
 	self.itemPush.targetId = colonyId;
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:nil];
 	[self->pickColonyController release];
 	self->pickColonyController = nil;
 	[self.tableView reloadData];
@@ -661,7 +669,7 @@ typedef enum {
 	self->pickColonyController = [[PickColonyController create] retain];
 	self->pickColonyController.delegate = self;
 	self->pickColonyController.colonies = session.empire.planets;
-	[self presentModalViewController:self->pickColonyController animated:YES];
+	[self presentViewController:self->pickColonyController animated:YES completion:nil];
 }
 
 
@@ -677,23 +685,16 @@ typedef enum {
 - (id)pushedItems:(LEBuildingPushItems *)request {
 	if ([request wasError]) {
 		NSString *errorText = [request errorMessage];
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Could not push items." message:errorText delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Cound not push items." message:errorText preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
 		[request markErrorHandled];
 	} else {
 		[self.navigationController popViewControllerAnimated:YES];
 	}
 
 	return nil;
-}
-
-#pragma mark -
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.destructiveButtonIndex == buttonIndex ) {
-		[self pushItems];
-	}
 }
 
 

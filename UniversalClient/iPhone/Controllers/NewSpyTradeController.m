@@ -238,10 +238,15 @@ typedef enum {
 	if (self.trade.askEssentia) {
 		if (self.baseTradeBuilding.usesEssentia) {
             NSDecimalNumber *cost = [[NSDecimalNumber decimalNumberWithString:@"3"] decimalNumberBySubtracting:[[NSDecimalNumber decimalNumberWithString:@"0.1"] decimalNumberByMultiplyingBy:self.baseTradeBuilding.level]];
-			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:@"If this trade is accepted it will cost you %@ Essentia. Do you wish to contine?", cost] delegate:self cancelButtonTitle:@"No" destructiveButtonTitle:@"Yes" otherButtonTitles:nil];
-			actionSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-			[actionSheet showFromTabBar:self.tabBarController.tabBar];
-			[actionSheet release];
+			UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"If this trade is accepted it will cost you %@ Essentia. Do you wish to contine?", cost] message:@"" preferredStyle:UIAlertControllerStyleAlert];
+			UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+				[self postTrade];
+			}];
+			UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+			}];
+			[alert addAction:cancelAction];
+			[alert addAction:okAction];
+			[self presentViewController:alert animated:YES completion:nil];
 		} else {
 			[self postTrade];
 		}
@@ -254,8 +259,11 @@ typedef enum {
 		} else if ([self.trade.offer count] == 0) {
 			errorText = @"You must select what you want to sell.";
 		}
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Incomplete" message:errorText delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Incomplete" message:errorText preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
 		
 	}
 }
@@ -312,23 +320,17 @@ typedef enum {
 - (id)tradePosted:(LEBuildingAddToSpyMarket *)request {
 	if ([request wasError]) {
 		NSString *errorText = [request errorMessage];
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Could not post trade." message:errorText delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Could not post trade" message:errorText preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
 		[request markErrorHandled];
 	} else {
 		[self.navigationController popViewControllerAnimated:YES];
 	}
 	
 	return nil;
-}
-
-#pragma mark -
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.destructiveButtonIndex == buttonIndex ) {
-		[self postTrade];
-	}
 }
 
 

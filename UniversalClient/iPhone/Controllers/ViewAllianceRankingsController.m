@@ -72,7 +72,6 @@ typedef enum {
 	self.pageSegmentedControl = [[[UISegmentedControl alloc] initWithItems:_array(UP_ARROW_ICON, DOWN_ARROW_ICON)] autorelease];
 	[self.pageSegmentedControl addTarget:self action:@selector(switchPage) forControlEvents:UIControlEventValueChanged]; 
 	self.pageSegmentedControl.momentary = YES;
-	self.pageSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar; 
 	UIBarButtonItem *rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:self.pageSegmentedControl] autorelease];
 	self.navigationItem.rightBarButtonItem = rightBarButtonItem; 
 	
@@ -82,7 +81,7 @@ typedef enum {
 	
 	self.toolbarItems = _array(
 							   [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease],
-							   [[[UIBarButtonItem alloc] initWithTitle:@"Search for Alliance" style:UIBarButtonItemStyleBordered target:self action:@selector(searchForAlliance)] autorelease],
+							   [[[UIBarButtonItem alloc] initWithTitle:@"Search for Alliance" style:UIBarButtonItemStylePlain target:self action:@selector(searchForAlliance)] autorelease],
 							   [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]
 							   );
 	

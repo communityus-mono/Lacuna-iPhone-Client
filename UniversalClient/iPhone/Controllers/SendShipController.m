@@ -224,7 +224,7 @@ typedef enum {
 			self->pickColonyController = [[PickColonyController create] retain];
 			self->pickColonyController.delegate = self;
 			self->pickColonyController.colonies = session.empire.planets;
-			[self presentModalViewController:self->pickColonyController animated:YES];
+			[self presentViewController:self->pickColonyController animated:YES completion:nil];
 			break;
 		default:
 			if (self.availableShips) {
@@ -232,10 +232,15 @@ typedef enum {
 					self.selectedShip = [self.availableShips objectAtIndex:(indexPath.section-1)];
 					Session *session = [Session sharedInstance];
 					if (session.empire.isIsolationist && ([self.selectedShip.type isEqualToString:@"colony_ship"] || [self.selectedShip.type isEqualToString:@"short_range_colony_ship"])) {
-						UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Sending out a Colony Ship or Short Range Colongy Ship will take you out of Isolationist mode. This means spies can be sent to your Colonies. Are you sure you want to do this?" delegate:self cancelButtonTitle:@"No" destructiveButtonTitle:@"Yes" otherButtonTitles:nil];
-						actionSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-						[actionSheet showFromTabBar:self.tabBarController.tabBar];
-						[actionSheet release];
+						UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Sending out a Colony Ship or Short Range Colongy Ship will take you out of Isolationist mode. This means spies can be sent to your Colonies." message:@"Are you sure you want to do this?" preferredStyle:UIAlertControllerStyleAlert];
+						UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+							[self sendShip];
+						}];
+						UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+						}];
+						[alert addAction:cancelAction];
+						[alert addAction:okAction];
+						[self presentViewController:alert animated:YES completion:nil];
 					} else {
 						[self sendShip];
 					}
@@ -280,7 +285,7 @@ typedef enum {
 
 - (void)colonySelected:(NSString *)colonyId {
 	self.sendFromBodyId = colonyId;
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:nil];
 	[self->pickColonyController release];
 	self->pickColonyController = nil;
 	if ([self.mapItem.type isEqualToString:@"star"]) {
@@ -291,16 +296,6 @@ typedef enum {
 	self.availableShips = nil;
 	self.shipTravelTimes = nil;
 	[self.tableView reloadData];
-}
-
-
-#pragma mark -
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.destructiveButtonIndex == buttonIndex ) {
-		[self sendShip];
-	}
 }
 
 

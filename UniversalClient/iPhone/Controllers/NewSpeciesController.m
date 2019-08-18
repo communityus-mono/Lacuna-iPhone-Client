@@ -163,7 +163,7 @@ typedef enum {
 	[self.growthCell setRating:_intv([self.speciesTemplate objectForKey:@"growth_affinity"])];
 	
 	[self calculatePoints];
-	self.navigationItem.title = [NSString stringWithFormat:@"%i / 45 points", self->points];
+	self.navigationItem.title = [NSString stringWithFormat:@"%li / 45 points", (long)self->points];
 	
 	self.sectionHeaders = _array([LEViewSectionTab tableView:self.tableView withText:@"Species"],
 								 [LEViewSectionTab tableView:self.tableView withText:@"Habital Orbits"],
@@ -386,14 +386,26 @@ typedef enum {
 
 - (IBAction)createSpecies {
 	if (_intv(self.maxOrbitCell.rating) < _intv(self.minOrbitCell.rating)) {
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Invalid Orbits" message:@"Max Orbit must be greater than or equal to min orbit." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Invalid Orbits" message: @"Max Orbit must be greater than or equal to min orbit." preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
+		
 	} else if (self->points > 45) {
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Too many points" message:[NSString stringWithFormat:@"You have spent %i points, but you can only spend 45 points.", self->points] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Too many points" message:[NSString stringWithFormat:@"You have spent %li points, but you can only spend 45 points.", (long)self->points] preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
+		
 	} else if (self->points < 45) {
-		UIAlertView *av = [[[UIAlertView alloc] initWithTitle:@"Too few points" message:[NSString stringWithFormat:@"You have spent %i points, but you must spend 45 points.", self->points] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-		[av show];
+		UIAlertController *av = [UIAlertController alertControllerWithTitle:@"Too few points" message:[NSString stringWithFormat:@"You have spent %li points, but you must spend 45 points.", (long)self->points] preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+							 { [av dismissViewControllerAnimated:YES completion:nil]; }];
+		[av addAction: ok];
+		[self presentViewController:av animated:YES completion:nil];
+		
 	} else {
 		self.pendingRequest = YES;
 		[[[LEEmpireUpdateSpecies alloc] initWithCallback:@selector(speciesCreated:) target:self
@@ -422,7 +434,7 @@ typedef enum {
 
 - (void)updatePoints {
 	[self calculatePoints];
-	self.navigationItem.title = [NSString stringWithFormat:@"%i / 45 points", self->points];
+	self.navigationItem.title = [NSString stringWithFormat:@"%li / 45 points", (long)self->points];
 }
 
 
@@ -478,8 +490,12 @@ typedef enum {
 			case 1009:
 				; //DO NOT REMOVE
 				[request markErrorHandled];
-				UIAlertView *nameAlertView = [[[UIAlertView alloc] initWithTitle:@"Could not create species" message:@"Your selected orbits must be continuous. You cannot have a break within the list of habital orbits." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-				[nameAlertView show];
+				
+				UIAlertController *nameAlertView = [UIAlertController alertControllerWithTitle:@"Could not create species" message: @"Your selected orbits must be continuous. You cannot have a break within the list of habital orbits." preferredStyle:UIAlertControllerStyleAlert];
+				UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action)
+									 { [nameAlertView dismissViewControllerAnimated:YES completion:nil]; }];
+				[nameAlertView addAction: ok];
+				[self presentViewController:nameAlertView animated:YES completion:nil];
 				break;
 		}
 	} else {

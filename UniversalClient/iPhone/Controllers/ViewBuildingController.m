@@ -151,10 +151,17 @@
 		self.selectedTableView = tableView;
 		self.selectedIndexPath = indexPath;
 		if ([session.body.currentBuilding isConfirmCell:indexPath]) {
-			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[session.body.currentBuilding confirmMessage:indexPath] delegate:self cancelButtonTitle:@"No" destructiveButtonTitle:@"Yes" otherButtonTitles:nil];
-			actionSheet.actionSheetStyle = UIActionSheetStyleBlackOpaque;
-			[actionSheet showFromTabBar:self.tabBarController.tabBar];
-			[actionSheet release];
+			UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Alert" message:[session.body.currentBuilding confirmMessage:indexPath] preferredStyle:UIAlertControllerStyleAlert];
+			UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+				[self callCellSelected];
+			}];
+			UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+			}];
+			[alert addAction:cancelAction];
+			[alert addAction:okAction];
+			[self presentViewController:alert animated:YES completion:nil];
+			[self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
+			
 		} else {
 			[self callCellSelected];
 		}
@@ -167,7 +174,7 @@
 	UIViewController *subViewController = [session.body.currentBuilding tableView:self.selectedTableView didSelectRowAtIndexPath:self.selectedIndexPath];
 	if (subViewController) {
 		if ([subViewController isKindOfClass:[WebPageController class]] ) {
-			[self presentModalViewController:subViewController animated:YES];
+			[self presentViewController:subViewController animated:YES completion:nil];
 		} else {
 			[self.navigationController pushViewController:subViewController animated:YES];
 		}
@@ -212,17 +219,6 @@
     NSLog(@"refresh called");
 	Session *session = [Session sharedInstance];
 	session.body.currentBuilding.needsReload = YES;
-}
-
-
-#pragma mark -
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.destructiveButtonIndex == buttonIndex ) {
-		[self callCellSelected];
-	}
-	[self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
 }
 
 
