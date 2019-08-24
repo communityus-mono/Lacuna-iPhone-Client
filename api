@@ -1,1 +1,8 @@
 53137d8f-3544-4118-9001-b0acbec70b3d
+
+INFO - REQUEST: login {"53137d8f-3544-4118-9001-b0acbec70b3d":"password","xxx":null,"test":"abc123"}
+ERROR - RESPONSE: {"id":"198659E0-DABD-4021-8738-A70FAC44A227","jsonrpc":"2.0","error":{"data":null,"code":1002,"message":"You need an API Key."}}
+
+INFO - REQUEST: login {"password":"xxx","browser":"eae07e93ac66889cd518062b272658e9","api_key":"53137d8f-3544-4118-9001-b0acbec70b3d","name":"test"}
+
+
